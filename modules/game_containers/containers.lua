@@ -85,7 +85,7 @@ function onContainerOpen(container, previousContainer)
     previousContainer.window = nil
     previousContainer.itemsPanel = nil
   else
-    containerWindow = g_ui.createWidget('ContainerWindow', modules.game_interface.getRightPanel())
+    containerWindow = g_ui.createWidget('ContainerWindow')
   end
   containerWindow:setId('container' .. container:getId())
   local containerPanel = containerWindow:getChildById('contentsPanel')
@@ -133,11 +133,18 @@ function onContainerOpen(container, previousContainer)
   local layout = containerPanel:getLayout()
   local cellSize = layout:getCellSize()
   containerWindow:setContentMinimumHeight(cellSize.height)
+  if containerWindow:getContentHeight() < cellSize.height then
+    containerWindow:setContentHeight(cellSize.height)
+  end
   containerWindow:setContentMaximumHeight(cellSize.height*layout:getNumLines())
 
   if not previousContainer then
     local filledLines = math.max(math.ceil(container:getItemsCount() / layout:getNumColumns()), 1)
     containerWindow:setContentHeight(filledLines*cellSize.height)
+  end
+
+  if not previousContainer then
+    modules.game_interface.addToPanels(containerWindow)
   end
 
   containerWindow:setup()
